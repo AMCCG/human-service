@@ -1,0 +1,12 @@
+spring:
+  application.name: human-service
+  cloud.config.enabled: false
+  flyway.enabled: true
+  flyway.baselineOnMigrate: true
+  flyway.validateOnMigrate: true
+  flyway.locations=classpath: db/migration
+
+s3:
+  bucket: "bucket"
+  subPath: "subPath"
+  landing: "human-service"
