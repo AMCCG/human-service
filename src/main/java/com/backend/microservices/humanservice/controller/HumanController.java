@@ -52,7 +52,7 @@ public class HumanController {
         human.setAddress("9 Ratchadapisek Rd., Jatujak Bangkok 10900 Thailand");
         human.setEmail(human.getEnglishFirstName() + "@microservices.com");
         human.setPhone("0900000000");
-        human.setProfileImageId("1");
+        human.setProfileImageId(1);
 //        human.setProfile(getBase64Profile());
         return human;
     }

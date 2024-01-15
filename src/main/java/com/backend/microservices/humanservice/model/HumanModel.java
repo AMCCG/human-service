@@ -18,6 +18,6 @@ public class HumanModel {
     private String address;
     private String email;
     private String phone;
-    private String profileImageId;
+    private int profileImageId;
 
 }
