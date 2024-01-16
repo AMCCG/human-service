@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -22,13 +21,14 @@ public class HumanController {
 
     @GetMapping("")
     public ResponseEntity<List<HumanModel>> getAllHuman(@RequestHeader HttpHeaders headers) {
-        List<HumanModel> lists = new ArrayList<>();
+        List<HumanModel> lists = humanService.getAllHuman();
         return new ResponseEntity<>(lists, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<HumanModel> findById(@RequestHeader HttpHeaders headers, @PathVariable String id) {
-        return new ResponseEntity<>(new HumanModel(), HttpStatus.OK);
+        HumanModel human = humanService.getHumanById(Integer.parseInt(id));
+        return new ResponseEntity<>(human, HttpStatus.OK);
     }
 
     @PostMapping("")

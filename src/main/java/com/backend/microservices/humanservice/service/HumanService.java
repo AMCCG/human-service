@@ -7,9 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 
 
 @Slf4j
@@ -18,12 +16,63 @@ import java.util.Random;
 public class HumanService {
     private final HumanRepository humanRepository;
 
+    public List<HumanModel> getAllHuman() {
+        List<HumanModel> humanModels = new ArrayList<>();
+        List<HumanEntity> humanEntities = humanRepository.getAllHuman();
+        log.info("Get all human size: {}", humanEntities.size());
+        for (HumanEntity humanEntity : humanEntities) {
+            HumanModel humanModel = new HumanModel();
+            mapperToHumanModel(humanModel, humanEntity);
+            humanModels.add(humanModel);
+        }
+        return humanModels;
+    }
+
+    public HumanModel getHumanById(int id) {
+        var humanEntity = humanRepository.getHumanById(id);
+        log.info("Get human by id: {}", humanEntity);
+        HumanModel humanModel = new HumanModel();
+        mapperToHumanModel(humanModel, humanEntity);
+        return humanModel;
+    }
+
     public HumanModel create(HumanModel humanModel) {
         log.info("Create human: {}", humanModel);
-        HumanEntity humanEntity = getHumanEntity();
+        HumanEntity humanEntity = new HumanEntity();
+        mapperToHumanEntity(humanEntity, humanModel);
         var id = humanRepository.create(humanEntity);
         humanModel.setId(id);
         return humanModel;
+    }
+
+    private void mapperToHumanModel(HumanModel humanModel, HumanEntity humanEntity) {
+        humanModel.setId(humanEntity.getId());
+        humanModel.setIdCard(humanEntity.getIdCard());
+        humanModel.setThaiTitle(humanEntity.getThaiTitle());
+        humanModel.setThaiFirstName(humanEntity.getThaiFirstName());
+        humanModel.setThaiLastName(humanEntity.getThaiLastName());
+        humanModel.setEnglishTitle(humanEntity.getEnglishTitle());
+        humanModel.setEnglishFirstName(humanEntity.getEnglishFirstName());
+        humanModel.setEnglishLastName(humanEntity.getEnglishLastName());
+        humanModel.setAddress(humanEntity.getAddress());
+        humanModel.setEmail(humanEntity.getEmail());
+        humanModel.setPhone(humanEntity.getPhone());
+        humanModel.setDateOfBirth(humanEntity.getDateOfBirth());
+    }
+
+
+    private void mapperToHumanEntity(HumanEntity humanEntity, HumanModel humanModel) {
+        humanEntity.setIdCard(humanModel.getIdCard());
+        humanEntity.setThaiTitle(humanModel.getThaiTitle());
+        humanEntity.setThaiFirstName(humanModel.getThaiFirstName());
+        humanEntity.setThaiLastName(humanModel.getThaiLastName());
+        humanEntity.setEnglishTitle(humanModel.getEnglishTitle());
+        humanEntity.setEnglishFirstName(humanModel.getEnglishFirstName());
+        humanEntity.setEnglishLastName(humanModel.getEnglishLastName());
+        humanEntity.setAddress(humanModel.getAddress());
+        humanEntity.setEmail(humanModel.getEmail());
+        humanEntity.setPhone(humanModel.getPhone());
+        humanEntity.setDateOfBirth(humanModel.getDateOfBirth());
     }
 
     private HumanEntity getHumanEntity() {

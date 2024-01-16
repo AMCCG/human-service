@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class HumanModel {
-    private int id;
+    private Integer id;
     private String idCard;
     private String thaiTitle;
     private String thaiFirstName;
@@ -18,6 +18,6 @@ public class HumanModel {
     private String address;
     private String email;
     private String phone;
-    private int profileImageId;
+    private Integer profileImageId;
 
 }
