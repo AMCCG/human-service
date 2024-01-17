@@ -5,6 +5,6 @@ spring:
   datasource.driver-class-name: com.mysql.cj.jdbc.Driver
 
 s3:
-  bucket: "bucket"
-  subPath: "subPath"
-  landing: "human-service"
+  bucket: src
+  subPath: test
+  landing: resources/human-service

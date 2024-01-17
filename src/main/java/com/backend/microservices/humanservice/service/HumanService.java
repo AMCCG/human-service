@@ -2,10 +2,12 @@ package com.backend.microservices.humanservice.service;
 
 import com.backend.microservices.humanservice.model.HumanModel;
 import com.backend.microservices.humanservice.model.entity.HumanEntity;
+import com.backend.microservices.humanservice.model.entity.ProfileImageEntity;
 import com.backend.microservices.humanservice.repository.HumanRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -15,6 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 public class HumanService {
     private final HumanRepository humanRepository;
+    private final HumanFileStorageService humanFileStorageService;
 
     public List<HumanModel> getAllHuman() {
         List<HumanModel> humanModels = new ArrayList<>();
@@ -58,6 +61,7 @@ public class HumanService {
         humanModel.setEmail(humanEntity.getEmail());
         humanModel.setPhone(humanEntity.getPhone());
         humanModel.setDateOfBirth(humanEntity.getDateOfBirth());
+        humanModel.setProfileImageId(humanEntity.getProfileImageId());
     }
 
 
@@ -73,6 +77,7 @@ public class HumanService {
         humanEntity.setEmail(humanModel.getEmail());
         humanEntity.setPhone(humanModel.getPhone());
         humanEntity.setDateOfBirth(humanModel.getDateOfBirth());
+        humanEntity.setProfileImageId(humanModel.getProfileImageId());
     }
 
     private HumanEntity getHumanEntity() {
@@ -115,5 +120,17 @@ public class HumanService {
 
     private Random getRandom() {
         return new Random();
+    }
+
+    public HumanModel create(HumanModel humanModel, MultipartFile file) {
+        log.info("Create human: {}", humanModel);
+        ProfileImageEntity profileImageEntity = humanFileStorageService.storeFile(file);
+        log.info("Profile image: {}", profileImageEntity);
+        HumanEntity humanEntity = new HumanEntity();
+        mapperToHumanEntity(humanEntity, humanModel);
+        var id = humanRepository.create(humanEntity);
+        humanModel.setId(id);
+        humanModel.setProfileImageId(profileImageEntity.getId());
+        return humanModel;
     }
 }

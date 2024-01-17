@@ -21,7 +21,7 @@ public class HumanRepository {
 
     public int create(HumanEntity humanEntity) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        String insertHumanSql = "INSERT INTO human (idCard, thaiTitle, thaiFirstName, thaiLastName, englishTitle, englishFirstName, englishLastName, dateOfBirth, address, email, phone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertHumanSql = "INSERT INTO human (idCard, thaiTitle, thaiFirstName, thaiLastName, englishTitle, englishFirstName, englishLastName, dateOfBirth, address, email, phone, profileImageId) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(insertHumanSql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, humanEntity.getIdCard());
@@ -40,6 +40,7 @@ public class HumanRepository {
             ps.setString(9, humanEntity.getAddress());
             ps.setString(10, humanEntity.getEmail());
             ps.setString(11, humanEntity.getPhone());
+            ps.setObject(12, humanEntity.getProfileImageId());
             return ps;
         }, keyHolder);
 
