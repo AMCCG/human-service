@@ -19,5 +19,5 @@ public class HumanModel {
     private String email;
     private String phone;
     private Integer profileImageId;
-
+    private byte[] image;
 }

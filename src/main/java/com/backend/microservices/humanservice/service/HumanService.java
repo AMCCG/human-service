@@ -6,10 +6,15 @@ import com.backend.microservices.humanservice.model.entity.ProfileImageEntity;
 import com.backend.microservices.humanservice.repository.HumanRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 
 @Slf4j
@@ -19,7 +24,7 @@ public class HumanService {
     private final HumanRepository humanRepository;
     private final HumanFileStorageService humanFileStorageService;
 
-    public List<HumanModel> getAllHuman() {
+    public List<HumanModel> getAllHuman() throws IOException {
         List<HumanModel> humanModels = new ArrayList<>();
         List<HumanEntity> humanEntities = humanRepository.getAllHuman();
         log.info("Get all human size: {}", humanEntities.size());
@@ -31,7 +36,7 @@ public class HumanService {
         return humanModels;
     }
 
-    public HumanModel getHumanById(int id) {
+    public HumanModel getHumanById(int id) throws IOException {
         var humanEntity = humanRepository.getHumanById(id);
         log.info("Get human by id: {}", humanEntity);
         HumanModel humanModel = new HumanModel();
@@ -48,7 +53,7 @@ public class HumanService {
         return humanModel;
     }
 
-    private void mapperToHumanModel(HumanModel humanModel, HumanEntity humanEntity) {
+    private void mapperToHumanModel(HumanModel humanModel, HumanEntity humanEntity) throws IOException {
         humanModel.setId(humanEntity.getId());
         humanModel.setIdCard(humanEntity.getIdCard());
         humanModel.setThaiTitle(humanEntity.getThaiTitle());
@@ -62,6 +67,7 @@ public class HumanService {
         humanModel.setPhone(humanEntity.getPhone());
         humanModel.setDateOfBirth(humanEntity.getDateOfBirth());
         humanModel.setProfileImageId(humanEntity.getProfileImageId());
+        humanModel.setImage(getImage());
     }
 
 
@@ -78,25 +84,6 @@ public class HumanService {
         humanEntity.setPhone(humanModel.getPhone());
         humanEntity.setDateOfBirth(humanModel.getDateOfBirth());
         humanEntity.setProfileImageId(humanModel.getProfileImageId());
-    }
-
-    private HumanEntity getHumanEntity() {
-        var random = getRandom();
-        HumanEntity human = new HumanEntity();
-        human.setIdCard(getIdCard());
-        human.setThaiTitle("setThaiTitle");
-        human.setThaiFirstName("thaiFirstName");
-        human.setThaiLastName("ThaiLastName");
-        human.setEnglishTitle("setEnglishTitle");
-        human.setEnglishFirstName("setEnglishFirstName");
-        human.setEnglishLastName("setEnglishLastName");
-        Calendar c = Calendar.getInstance(Locale.ENGLISH);
-        c.set(Calendar.YEAR, random.nextInt(1900, 2024));
-        human.setDateOfBirth(c.getTime());
-        human.setAddress("9 Ratchadapisek Rd., Jatujak Bangkok 10900 Thailand");
-        human.setEmail(human.getEnglishFirstName() + "@microservices.com");
-        human.setPhone("0900000000");
-        return human;
     }
 
     private String getIdCard() {
@@ -122,7 +109,7 @@ public class HumanService {
         return new Random();
     }
 
-    public HumanModel create(HumanModel humanModel, MultipartFile file) {
+    public HumanModel create(HumanModel humanModel, MultipartFile file) throws IOException {
         log.info("Create human: {}", humanModel);
         ProfileImageEntity profileImageEntity = humanFileStorageService.storeFile(file);
         log.info("Profile image: {}", profileImageEntity);
@@ -131,6 +118,12 @@ public class HumanService {
         var id = humanRepository.create(humanEntity);
         humanModel.setId(id);
         humanModel.setProfileImageId(profileImageEntity.getId());
+        humanModel.setImage(getImage());
         return humanModel;
+    }
+
+    public byte[] getImage() throws IOException {
+        Resource imResource = humanFileStorageService.loadFile();
+        return StreamUtils.copyToByteArray(imResource.getInputStream());
     }
 }

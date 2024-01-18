@@ -2,9 +2,12 @@ package com.backend.microservices.humanservice.service;
 
 import com.backend.microservices.humanservice.config.ProfileImageConfig;
 import com.backend.microservices.humanservice.exception.StorageException;
+import com.backend.microservices.humanservice.exception.StorageFileNotFoundException;
 import com.backend.microservices.humanservice.model.entity.ProfileImageEntity;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,6 +67,21 @@ public class HumanFileStorageService {
             Files.createDirectories(storeagePath);
         } catch (IOException e) {
             throw new StorageException("Can not create directory.", e);
+        }
+    }
+
+    public Resource loadFile() {
+        var filename = "f43a6c14-034f-491f-ae9a-85c3b4e71f7d.png";
+        try {
+            Path file = this.profileImageConfig.getStoreagePath().resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new StorageFileNotFoundException("Could not read file: " + filename);
+            }
+        } catch (MalformedURLException e) {
+            throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
     }
 }
